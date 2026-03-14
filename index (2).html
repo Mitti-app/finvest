@@ -1,0 +1,3136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finvest — Student Finance Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+/* ─── CSS VARIABLES ─── */
+:root {
+  --bg: #080A0F;
+  --bg-2: #0D1018;
+  --bg-3: #111520;
+  --bg-card: #0F1219;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(255,255,255,0.14);
+  --text: #F0F2F8;
+  --text-muted: #8A90A2;
+  --text-dim: #4A5068;
+  --accent: #00E5A0;
+  --accent-2: #0066FF;
+  --accent-warm: #FFB800;
+  --accent-glow: rgba(0, 229, 160, 0.15);
+  --accent-2-glow: rgba(0, 102, 255, 0.15);
+  --font-display: 'Syne', 'Segoe UI', Arial, sans-serif;
+  --font-body: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+  --nav-h: 72px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Custom Cursor */
+.cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(0,229,160,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.18s cubic-bezier(0.4,0,0.2,1), width 0.2s, height 0.2s;
+}
+body:has(a:hover) .cursor { width: 16px; height: 16px; }
+body:has(a:hover) .cursor-ring { width: 50px; height: 50px; }
+body:has(button:hover) .cursor { width: 16px; height: 16px; }
+body:has(button:hover) .cursor-ring { width: 50px; height: 50px; }
+
+/* ─── NOISE OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* ─── TYPOGRAPHY ─── */
+h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 700; line-height: 1.15; }
+.display-xl { font-size: clamp(3rem, 7vw, 7rem); font-weight: 800; letter-spacing: -0.03em; }
+.display-lg { font-size: clamp(2.2rem, 5vw, 4.5rem); font-weight: 800; letter-spacing: -0.025em; }
+.display-md { font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 700; letter-spacing: -0.02em; }
+.display-sm { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 600; }
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+p { color: var(--text-muted); font-size: 1rem; line-height: 1.75; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── LAYOUT HELPERS ─── */
+.container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 120px 0; position: relative; }
+.section-sm { padding: 80px 0; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.col { flex-direction: column; }
+.gap-4 { gap: 4px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; } .gap-24 { gap: 24px; } .gap-32 { gap: 32px; }
+.text-center { text-align: center; }
+.text-accent { color: var(--accent); }
+.text-muted { color: var(--text-muted); }
+
+/* ─── DIVIDER ─── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+  margin: 0;
+}
+
+/* ─── BADGE ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0,229,160,0.1);
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: 100px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+.badge-blue {
+  background: rgba(0,102,255,0.1);
+  border-color: rgba(0,102,255,0.25);
+  color: #4D9FFF;
+}
+.badge-warm {
+  background: rgba(255,184,0,0.1);
+  border-color: rgba(255,184,0,0.25);
+  color: var(--accent-warm);
+}
+
+/* ─── BUTTONS ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.07);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn:hover::after { opacity: 1; }
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+  box-shadow: 0 0 32px rgba(0,229,160,0.25);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 48px rgba(0,229,160,0.4); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-bright);
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+.btn-sm { padding: 10px 20px; font-size: 0.85rem; }
+.btn-lg { padding: 18px 36px; font-size: 1rem; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.card-accent-top::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: 2px 2px 0 0;
+}
+
+/* ─── ICON CIRCLE ─── */
+.icon-circle {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.icon-circle-green { background: rgba(0,229,160,0.12); color: var(--accent); }
+.icon-circle-blue { background: rgba(0,102,255,0.12); color: #4D9FFF; }
+.icon-circle-warm { background: rgba(255,184,0,0.12); color: var(--accent-warm); }
+.icon-circle-purple { background: rgba(157,78,221,0.12); color: #C084FC; }
+
+/* ─── GLOW EFFECTS ─── */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* ─── SECTION HEADER ─── */
+.section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 64px;
+}
+.section-header .eyebrow { margin-bottom: 16px; display: block; }
+.section-header h2 { margin-bottom: 20px; }
+.section-header p { font-size: 1.05rem; }
+
+/* ──────────────────────────────────────────
+   NAVIGATION
+────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  z-index: 100;
+  transition: background 0.3s, border-bottom 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.nav.scrolled {
+  background: rgba(8,10,15,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: var(--border);
+}
+.nav-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+}
+.nav-links a {
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+}
+.nav-cta { display: flex; align-items: center; gap: 10px; }
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  background: none;
+  border: none;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+/* Mobile Nav */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: var(--nav-h);
+  left: 0; right: 0;
+  background: rgba(8,10,15,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px 24px;
+  z-index: 99;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav a {
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+.mobile-nav a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+.mobile-nav .btn { margin-top: 8px; justify-content: center; }
+
+/* ──────────────────────────────────────────
+   HERO  (#home)
+────────────────────────────────────────── */
+#home {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-top: var(--nav-h);
+  overflow: hidden;
+}
+
+.hero-glow-1 {
+  width: 600px; height: 600px;
+  background: rgba(0,229,160,0.12);
+  top: -100px; left: -100px;
+}
+.hero-glow-2 {
+  width: 500px; height: 500px;
+  background: rgba(0,102,255,0.1);
+  bottom: -100px; right: -100px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  padding: 80px 0 100px;
+}
+
+.hero-eyebrow { margin-bottom: 24px; }
+.hero-title { margin-bottom: 28px; }
+
+.hero-title .line-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, #00B87A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  line-height: 1.75;
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+
+.hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.stat-item {}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-value .stat-accent { color: var(--accent); }
+.stat-label { font-size: 0.8rem; color: var(--text-dim); margin-top: 2px; }
+
+/* Hero App Preview */
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.app-mockup {
+  width: 280px;
+  background: var(--bg-3);
+  border: 1px solid var(--border-bright);
+  border-radius: 32px;
+  padding: 28px 20px;
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+.mockup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.mockup-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; color: #000; font-weight: 700;
+}
+.mockup-greeting { font-size: 0.72rem; color: var(--text-dim); }
+.mockup-name { font-size: 0.88rem; font-weight: 600; }
+
+.mockup-balance-card {
+  background: linear-gradient(135deg, rgba(0,229,160,0.15), rgba(0,102,255,0.1));
+  border: 1px solid rgba(0,229,160,0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.mockup-bal-label { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.mockup-bal-amount { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; margin: 4px 0; }
+.mockup-bal-change { font-size: 0.72rem; color: var(--accent); }
+
+.mockup-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.mockup-mini-card {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.mockup-mini-label { font-size: 0.62rem; color: var(--text-dim); margin-bottom: 4px; }
+.mockup-mini-value { font-size: 0.9rem; font-weight: 600; }
+.mockup-mini-value.green { color: var(--accent); }
+.mockup-mini-value.blue { color: #4D9FFF; }
+
+.mockup-transactions {}
+.mockup-tx-label { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.mockup-tx {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.mockup-tx:last-child { border-bottom: none; }
+.mockup-tx-info { display: flex; align-items: center; gap: 8px; }
+.mockup-tx-dot {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+}
+.mockup-tx-name { font-size: 0.75rem; }
+.mockup-tx-cat { font-size: 0.62rem; color: var(--text-dim); }
+.mockup-tx-amt { font-size: 0.8rem; font-weight: 600; }
+.mockup-tx-amt.debit { color: #FF5B5B; }
+.mockup-tx-amt.credit { color: var(--accent); }
+
+/* Floating cards around mockup */
+.float-card {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  white-space: nowrap;
+}
+.float-card-1 {
+  top: 15%;
+  right: -30px;
+  animation: float2 5s ease-in-out infinite;
+}
+.float-card-2 {
+  bottom: 20%;
+  left: -30px;
+  animation: float3 6s ease-in-out infinite;
+}
+@keyframes float2 { 0%,100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+@keyframes float3 { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(8px) rotate(-2deg); } }
+
+.float-label { font-size: 0.65rem; color: var(--text-dim); }
+.float-value { font-size: 0.9rem; font-weight: 700; margin-top: 2px; }
+.float-sub { font-size: 0.65rem; color: var(--accent); }
+
+/* ──────────────────────────────────────────
+   PRODUCT INTRO STRIP
+────────────────────────────────────────── */
+.intro-strip {
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+}
+.intro-pills {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.intro-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.intro-pill:hover { border-color: var(--border-bright); color: var(--text); }
+.intro-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ──────────────────────────────────────────
+   PRODUCT INTRODUCTION
+────────────────────────────────────────── */
+#product-intro { background: var(--bg); }
+.product-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: center;
+}
+.product-intro-text .eyebrow { margin-bottom: 16px; }
+.product-intro-text h2 { margin-bottom: 20px; }
+.product-intro-text p { margin-bottom: 16px; }
+.product-intro-visual {
+  position: relative;
+}
+.dashboard-preview {
+  background: var(--bg-3);
+  border: 1px solid var(--border-bright);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-preview::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-warm));
+}
+.dash-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.dash-title { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.dash-period {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.dash-big-num {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.dash-big-label { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 24px; }
+.dash-bar-group { margin-bottom: 24px; }
+.dash-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.dash-bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.dash-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease-out;
+}
+.fill-green { background: linear-gradient(90deg, var(--accent), #00B87A); }
+.fill-blue { background: linear-gradient(90deg, #0066FF, #4D9FFF); }
+.fill-warm { background: linear-gradient(90deg, #FFB800, #FF8A00); }
+.fill-purple { background: linear-gradient(90deg, #9D4EDD, #C084FC); }
+
+.dash-goals { display: flex; gap: 10px; flex-wrap: wrap; }
+.dash-goal-tag {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.tag-green { background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.2); }
+.tag-blue { background: rgba(0,102,255,0.1); color: #4D9FFF; border: 1px solid rgba(0,102,255,0.2); }
+.tag-warm { background: rgba(255,184,0,0.1); color: var(--accent-warm); border: 1px solid rgba(255,184,0,0.2); }
+
+/* ──────────────────────────────────────────
+   FEATURE HIGHLIGHTS
+────────────────────────────────────────── */
+#feature-highlights { background: var(--bg-2); }
+.highlight-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.hl-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.hl-card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.hl-card-glow {
+  position: absolute;
+  width: 150px; height: 150px;
+  border-radius: 50%;
+  filter: blur(50px);
+  top: -40px; right: -40px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.hl-card:hover .hl-card-glow { opacity: 1; }
+.hl-icon { margin-bottom: 20px; }
+.hl-card h3 { font-size: 1.15rem; margin-bottom: 10px; }
+.hl-card p { font-size: 0.88rem; line-height: 1.65; }
+
+/* ──────────────────────────────────────────
+   PLATFORM OVERVIEW
+────────────────────────────────────────── */
+#platform-overview {}
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.overview-steps {}
+.step-item {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.step-item:last-child { border-bottom: none; }
+.step-item:hover .step-num-circle {
+  background: var(--accent);
+  color: #000;
+}
+.step-num-circle {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-bright);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.step-content h4 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+.step-content p { font-size: 0.87rem; }
+
+.overview-right {}
+.overview-card {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 16px;
+}
+.overview-card:hover { border-color: var(--border-bright); }
+.overview-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.overview-card h4 { font-size: 0.95rem; font-weight: 600; }
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 50px;
+}
+.mini-bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.5s ease-out;
+  min-height: 6px;
+}
+
+/* ──────────────────────────────────────────
+   PROBLEM & SOLUTION  (#problem)
+────────────────────────────────────────── */
+#problem { background: var(--bg-2); }
+.problem-intro {
+  max-width: 680px;
+  margin: 0 auto 72px;
+  text-align: center;
+}
+.problem-blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 64px;
+}
+.problem-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,90,90,0.15);
+  border-radius: var(--radius);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.problem-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,90,90,0.04), transparent);
+  pointer-events: none;
+}
+.problem-card .card-num {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba(255,90,90,0.2);
+  margin-bottom: 12px;
+}
+.problem-card h3 { font-size: 1.1rem; margin-bottom: 12px; color: #FF7A7A; }
+.problem-card p { font-size: 0.88rem; }
+
+.solution-divider {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 0 0 64px;
+}
+.solution-divider-line { flex: 1; height: 1px; background: var(--border); }
+.solution-divider-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: rgba(0,229,160,0.08);
+  border: 1px solid rgba(0,229,160,0.2);
+  border-radius: 100px;
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.solution-blocks {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+}
+.solution-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0,229,160,0.12);
+  border-radius: var(--radius);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.solution-card:hover { border-color: rgba(0,229,160,0.3); transform: translateY(-4px); }
+.solution-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,229,160,0.04), transparent);
+  pointer-events: none;
+}
+.solution-card .sol-icon { margin-bottom: 20px; font-size: 1.8rem; }
+.solution-card h3 { font-size: 1.05rem; margin-bottom: 12px; }
+.solution-card p { font-size: 0.88rem; }
+
+/* ──────────────────────────────────────────
+   FEATURES  (#features)
+────────────────────────────────────────── */
+#features { background: var(--bg); }
+.features-hero {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 80px;
+}
+.features-hero .eyebrow { display: block; margin-bottom: 16px; }
+.features-hero h2 { margin-bottom: 16px; }
+
+.feature-tabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+.feature-tab {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+.feature-tab:hover, .feature-tab.active {
+  background: rgba(0,229,160,0.1);
+  border-color: rgba(0,229,160,0.3);
+  color: var(--accent);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 60px;
+}
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.feature-card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+.feature-card-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+.feature-card h3 { font-size: 1.05rem; margin-bottom: 10px; }
+.feature-card p { font-size: 0.85rem; }
+.feature-card .feature-tag {
+  margin-top: 16px;
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* Feature Showcase */
+.feature-showcase {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  align-items: center;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 56px;
+  margin-bottom: 24px;
+}
+.showcase-label { font-size: 0.72rem; color: var(--accent); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+.showcase-label-warm { color: var(--accent-warm); }
+.feature-showcase h3 { margin-bottom: 16px; font-size: 1.6rem; }
+.feature-showcase p { margin-bottom: 20px; }
+.feature-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.feature-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.feature-bullets li::before {
+  content: '✓';
+  width: 22px; height: 22px;
+  background: rgba(0,229,160,0.12);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Goal Tracker Visual */
+.goal-tracker-visual {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 16px;
+  padding: 24px;
+}
+.goal-item {
+  margin-bottom: 20px;
+}
+.goal-item:last-child { margin-bottom: 0; }
+.goal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.goal-name { font-size: 0.88rem; font-weight: 500; }
+.goal-pct { font-size: 0.78rem; color: var(--text-dim); }
+.goal-progress {
+  height: 8px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.goal-fill {
+  height: 100%;
+  border-radius: 4px;
+  position: relative;
+}
+.goal-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 100%);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.goal-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
+
+/* Investment Visual */
+.invest-visual {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 16px;
+  padding: 24px;
+}
+.invest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.invest-returns { text-align: right; }
+.invest-returns .big { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.invest-returns .lbl { font-size: 0.68rem; color: var(--text-dim); }
+.invest-chart-mock {
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+.ic-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(0deg, rgba(0,229,160,0.3), rgba(0,229,160,0.7));
+}
+.invest-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.invest-chip {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* ──────────────────────────────────────────
+   WHY NOW  (#why-now)
+────────────────────────────────────────── */
+#why-now { background: var(--bg-2); }
+.why-hero {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 80px;
+}
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 60px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  text-align: center;
+  transition: var(--transition);
+}
+.stat-card:hover { border-color: var(--border-bright); transform: translateY(-4px); }
+.stat-card .num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  margin-bottom: 6px;
+}
+.stat-card .lbl { font-size: 0.82rem; color: var(--text-muted); }
+
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.why-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.why-block:hover { border-color: var(--border-bright); }
+.why-block .eyebrow { display: block; margin-bottom: 16px; }
+.why-block h3 { font-size: 1.3rem; margin-bottom: 14px; }
+.why-block p { font-size: 0.9rem; }
+.why-block-wide {
+  grid-column: 1 / -1;
+}
+.why-timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+.timeline-item {
+  padding: 16px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.timeline-year { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+.timeline-text { font-size: 0.8rem; color: var(--text-muted); }
+
+.why-highlight {
+  background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(0,102,255,0.06));
+  border: 1px solid rgba(0,229,160,0.15);
+}
+
+/* ──────────────────────────────────────────
+   REVIEWS  (#reviews)
+────────────────────────────────────────── */
+#reviews { background: var(--bg); }
+.reviews-header { text-align: center; max-width: 560px; margin: 0 auto 64px; }
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.review-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.review-card:hover { border-color: var(--border-bright); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.review-card.featured {
+  border-color: rgba(0,229,160,0.2);
+  background: linear-gradient(135deg, rgba(0,229,160,0.04), var(--bg-card));
+}
+.review-quote { font-size: 2.5rem; color: var(--accent); opacity: 0.5; line-height: 1; margin-bottom: 16px; font-family: Georgia, serif; }
+.review-text { font-size: 0.9rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 24px; }
+.review-rating { display: flex; gap: 3px; margin-bottom: 20px; }
+.star { color: var(--accent-warm); font-size: 0.85rem; }
+.review-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.author-name { font-weight: 600; font-size: 0.9rem; }
+.author-role { font-size: 0.78rem; color: var(--text-dim); }
+.author-badge {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.reviews-secondary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+.review-mini {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  transition: var(--transition);
+}
+.review-mini:hover { border-color: var(--border-bright); }
+.review-mini-text { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.65; }
+.review-mini-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mini-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.mini-name { font-size: 0.82rem; font-weight: 600; }
+.mini-role { font-size: 0.72rem; color: var(--text-dim); }
+
+/* ──────────────────────────────────────────
+   ABOUT  (#about)
+────────────────────────────────────────── */
+#about { background: var(--bg-2); }
+.about-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 72px;
+  align-items: center;
+  margin-bottom: 80px;
+}
+.about-text .eyebrow { display: block; margin-bottom: 16px; }
+.about-text h2 { margin-bottom: 20px; }
+.about-text p { margin-bottom: 16px; }
+.about-values {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+}
+.value-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.value-icon {
+  font-size: 1.2rem;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.value-item h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; }
+.value-item p { font-size: 0.82rem; }
+
+/* Brand Visual */
+.brand-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.brand-big-card {
+  background: linear-gradient(135deg, rgba(0,229,160,0.1), rgba(0,102,255,0.08));
+  border: 1px solid rgba(0,229,160,0.2);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.brand-logo-large {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+.brand-logo-large span { color: var(--accent); }
+.brand-tagline { font-size: 0.9rem; color: var(--text-muted); }
+.brand-small-row { display: flex; gap: 12px; }
+.brand-small-card {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  transition: var(--transition);
+}
+.brand-small-card:hover { border-color: var(--border-bright); }
+.bsc-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.bsc-label { font-size: 0.72rem; color: var(--text-dim); }
+
+/* Vision */
+.vision-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px;
+  margin-bottom: 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.vision-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,229,160,0.08), transparent);
+  pointer-events: none;
+}
+.vision-block .eyebrow { display: block; margin-bottom: 16px; }
+.vision-block h3 { font-size: 1.8rem; max-width: 600px; margin: 0 auto 16px; }
+.vision-block p { max-width: 560px; margin: 0 auto; }
+
+/* Team */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.team-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  text-align: center;
+  transition: var(--transition);
+}
+.team-card:hover { border-color: var(--border-bright); transform: translateY(-4px); }
+.team-avatar-wrapper { position: relative; display: inline-block; margin-bottom: 16px; }
+.team-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 auto;
+  position: relative;
+}
+.team-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.team-card:hover .team-avatar::after { opacity: 1; }
+.team-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+.team-role { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px; }
+.team-socials { display: flex; justify-content: center; gap: 8px; }
+.team-social-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  transition: var(--transition);
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+.team-social-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* ──────────────────────────────────────────
+   CONTACT  (#contact)
+────────────────────────────────────────── */
+#contact { background: var(--bg); }
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 72px;
+  align-items: start;
+}
+.contact-info {}
+.contact-info .eyebrow { display: block; margin-bottom: 16px; }
+.contact-info h2 { margin-bottom: 16px; }
+.contact-info > p { margin-bottom: 36px; }
+
+.contact-items { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: var(--transition);
+}
+.contact-item:hover { border-color: var(--border-bright); }
+.contact-item-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.contact-item-text { font-size: 0.85rem; }
+.contact-item-label { font-size: 0.7rem; color: var(--text-dim); }
+
+.social-row { display: flex; gap: 10px; }
+.social-btn {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-muted);
+}
+.social-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: translateY(-3px); }
+
+/* Contact Form */
+.contact-form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.contact-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: rgba(0,229,160,0.4);
+  box-shadow: 0 0 0 3px rgba(0,229,160,0.08);
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-dim);
+}
+.form-group select option { background: var(--bg-3); }
+.form-group textarea { resize: vertical; min-height: 120px; }
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+.form-checkbox input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.form-submit { width: 100%; justify-content: center; }
+
+/* FAQ */
+.faq-section { margin-top: 80px; }
+.faq-section h3 { text-align: center; margin-bottom: 32px; }
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.faq-item:hover { border-color: var(--border-bright); }
+.faq-q {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.faq-toggle { color: var(--accent); font-size: 1.2rem; font-weight: 300; }
+.faq-a { font-size: 0.83rem; color: var(--text-muted); line-height: 1.65; }
+
+/* ──────────────────────────────────────────
+   CTA SECTION
+────────────────────────────────────────── */
+.cta-section {
+  padding: 120px 0;
+  background: var(--bg-2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-glow-1 {
+  width: 400px; height: 400px;
+  background: rgba(0,229,160,0.08);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.cta-section h2 { margin-bottom: 16px; max-width: 600px; margin-left: auto; margin-right: auto; }
+.cta-section > p { margin-bottom: 40px; }
+.cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* ──────────────────────────────────────────
+   FOOTER
+────────────────────────────────────────── */
+.footer {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 64px 0 32px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.footer-logo span { color: var(--accent); }
+.footer-brand p { font-size: 0.85rem; max-width: 260px; margin-bottom: 20px; }
+.footer-socials { display: flex; gap: 8px; }
+.footer-social {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-muted);
+}
+.footer-social:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+.footer-col h5 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.footer-col a {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--text); }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-copy { font-size: 0.8rem; color: var(--text-dim); }
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a { font-size: 0.8rem; color: var(--text-dim); transition: color 0.2s; }
+.footer-legal a:hover { color: var(--text); }
+
+/* ──────────────────────────────────────────
+   ANIMATIONS
+────────────────────────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-up-delay-1 { transition-delay: 0.1s; }
+.fade-up-delay-2 { transition-delay: 0.2s; }
+.fade-up-delay-3 { transition-delay: 0.3s; }
+.fade-up-delay-4 { transition-delay: 0.4s; }
+.fade-up-delay-5 { transition-delay: 0.5s; }
+
+/* ──────────────────────────────────────────
+   RESPONSIVE
+────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .team-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .feature-showcase { grid-template-columns: 1fr; gap: 32px; }
+  .overview-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .section { padding: 80px 0; }
+  .display-xl { font-size: 2.8rem; }
+  .display-lg { font-size: 2.2rem; }
+  .display-md { font-size: 1.8rem; }
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .highlight-cards { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .problem-blocks { grid-template-columns: 1fr; }
+  .solution-blocks { grid-template-columns: 1fr; }
+  .why-grid { grid-template-columns: 1fr; }
+  .why-timeline { grid-template-columns: 1fr 1fr; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .reviews-secondary { grid-template-columns: 1fr; }
+  .benefits-grid { grid-template-columns: 1fr 1fr !important; }
+  .why-who-grid { grid-template-columns: 1fr !important; }
+  .focus-grid { grid-template-columns: 1fr !important; }
+  .about-hero-grid { grid-template-columns: 1fr; }
+  .team-grid { grid-template-columns: 1fr 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .faq-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .product-intro-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 20px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .btn-lg { width: 100%; justify-content: center; }
+  .team-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ─── NAVIGATION ─── -->
+<nav class="nav" id="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#home" class="nav-logo">Fin<span>vest</span></a>
+      <ul class="nav-links">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#problem">Problem & Solution</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#why-now">Why Now</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="#contact" class="btn btn-ghost btn-sm">Sign In</a>
+        <a href="#contact" class="btn btn-primary btn-sm">Get Started →</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#home">Home</a>
+  <a href="#problem">Problem & Solution</a>
+  <a href="#features">Features</a>
+  <a href="#why-now">Why Now</a>
+  <a href="#reviews">Reviews</a>
+  <a href="#about">About Us</a>
+  <a href="#contact">Contact</a>
+  <a href="#contact" class="btn btn-primary">Get Started →</a>
+</div>
+
+<!-- ─────────────────────────────────────────
+     PAGE 1: HOME
+───────────────────────────────────────── -->
+<section id="home">
+  <div class="glow-orb hero-glow-1"></div>
+  <div class="glow-orb hero-glow-2"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <!-- Hero Text -->
+      <div class="hero-content">
+        <div class="hero-eyebrow fade-up">
+          <span class="badge">🎓 Built for Students &amp; Young Adults</span>
+        </div>
+        <h1 class="display-xl hero-title fade-up fade-up-delay-1">
+          Spend. Save.<br>
+          <span class="line-accent">Repeat.</span>
+        </h1>
+        <p class="hero-sub fade-up fade-up-delay-2">
+          Money moves fast during college. From daily expenses to spontaneous plans, it's easy to lose track of where it all goes. Finvest helps students understand their spending, build savings habits, and explore investing — in a simple and structured way.
+        </p>
+        <div class="hero-actions fade-up fade-up-delay-3">
+          <a href="#contact" class="btn btn-primary btn-lg">Get Started Free →</a>
+          <a href="#problem" class="btn btn-ghost btn-lg">Learn More</a>
+        </div>
+        <div class="hero-stats fade-up fade-up-delay-4">
+          <div class="stat-item">
+            <div class="stat-value">50<span class="stat-accent">K+</span></div>
+            <div class="stat-label">Active Students</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">₹12<span class="stat-accent">Cr+</span></div>
+            <div class="stat-label">Savings Tracked</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">4.9<span class="stat-accent">★</span></div>
+            <div class="stat-label">App Rating</div>
+          </div>
+        </div>
+      </div>
+      <!-- App Mockup -->
+      <div class="hero-visual fade-up fade-up-delay-2">
+        <div class="app-mockup">
+          <div class="mockup-header">
+            <div>
+              <div class="mockup-greeting">Good morning,</div>
+              <div class="mockup-name">Aarav Singh 👋</div>
+            </div>
+            <div class="mockup-avatar">AS</div>
+          </div>
+          <div class="mockup-balance-card">
+            <div class="mockup-bal-label">Total Balance</div>
+            <div class="mockup-bal-amount">₹24,380</div>
+            <div class="mockup-bal-change">↑ +₹1,240 this month</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mockup-mini-card">
+              <div class="mockup-mini-label">Spent</div>
+              <div class="mockup-mini-value" style="color:#FF7A7A">₹4,820</div>
+            </div>
+            <div class="mockup-mini-card">
+              <div class="mockup-mini-label">Saved</div>
+              <div class="mockup-mini-value green">₹2,500</div>
+            </div>
+            <div class="mockup-mini-card">
+              <div class="mockup-mini-label">Invested</div>
+              <div class="mockup-mini-value blue">₹1,000</div>
+            </div>
+          </div>
+          <div class="mockup-transactions">
+            <div class="mockup-tx-label">Recent</div>
+            <div class="mockup-tx">
+              <div class="mockup-tx-info">
+                <div class="mockup-tx-dot" style="background:rgba(0,229,160,0.12)">🍜</div>
+                <div>
+                  <div class="mockup-tx-name">Canteen</div>
+                  <div class="mockup-tx-cat">Food</div>
+                </div>
+              </div>
+              <div class="mockup-tx-amt debit">−₹120</div>
+            </div>
+            <div class="mockup-tx">
+              <div class="mockup-tx-info">
+                <div class="mockup-tx-dot" style="background:rgba(0,102,255,0.12)">📚</div>
+                <div>
+                  <div class="mockup-tx-name">Books</div>
+                  <div class="mockup-tx-cat">Education</div>
+                </div>
+              </div>
+              <div class="mockup-tx-amt debit">−₹340</div>
+            </div>
+            <div class="mockup-tx">
+              <div class="mockup-tx-info">
+                <div class="mockup-tx-dot" style="background:rgba(255,184,0,0.12)">💸</div>
+                <div>
+                  <div class="mockup-tx-name">Stipend</div>
+                  <div class="mockup-tx-cat">Income</div>
+                </div>
+              </div>
+              <div class="mockup-tx-amt credit">+₹5,000</div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating Cards -->
+        <div class="float-card float-card-1">
+          <div class="float-label">Goal Progress</div>
+          <div class="float-value" style="color:var(--accent)">Laptop Fund 78%</div>
+          <div class="float-sub">₹3,420 to go!</div>
+        </div>
+        <div class="float-card float-card-2">
+          <div class="float-label">SIP Returns</div>
+          <div class="float-value" style="color:#4D9FFF">+14.2% p.a.</div>
+          <div class="float-sub">Nifty 50 Index</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Product Intro Pills Strip -->
+<div class="intro-strip">
+  <div class="container">
+    <div class="intro-pills">
+      <div class="intro-pill"><span class="dot" style="background:var(--accent)"></span>Expense Tracking</div>
+      <div class="intro-pill"><span class="dot" style="background:#4D9FFF"></span>Goal-Based Savings</div>
+      <div class="intro-pill"><span class="dot" style="background:var(--accent-warm)"></span>Investment Planning</div>
+      <div class="intro-pill"><span class="dot" style="background:#C084FC"></span>Financial Literacy</div>
+      <div class="intro-pill"><span class="dot" style="background:#FF7A7A"></span>Budget Alerts</div>
+      <div class="intro-pill"><span class="dot" style="background:var(--accent)"></span>UPI Integration</div>
+      <div class="intro-pill"><span class="dot" style="background:#4D9FFF"></span>Report Analytics</div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Introduction -->
+<section id="product-intro" class="section">
+  <div class="container">
+    <div class="product-intro-grid">
+      <div class="product-intro-text fade-up">
+        <span class="eyebrow">About the Platform</span>
+        <h2 class="display-md">The smarter way for students to manage money</h2>
+        <p>Finvest is a platform built exclusively for students and young adults — people who are managing money for the first time, operating in a fast-moving digital financial world of UPI payments, mobile wallets, and instant transactions. Most financial tools are designed for working professionals. Finvest is different: it starts where students actually are.</p>
+        <p>The platform combines spending insights, savings tools, and beginner-friendly investment exploration to encourage stronger financial habits from an early stage. No jargon, no complexity — just clear, structured guidance that helps you approach money with greater confidence, discipline, and long-term thinking.</p>
+        <div style="margin-top:28px; display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="#features" class="btn btn-primary">Explore Features →</a>
+          <a href="#about" class="btn btn-ghost">Our Story</a>
+        </div>
+      </div>
+      <div class="product-intro-visual fade-up fade-up-delay-2">
+        <div class="dashboard-preview">
+          <div class="dash-title-row">
+            <div class="dash-title">Monthly Overview</div>
+            <div class="dash-period">Nov 2024</div>
+          </div>
+          <div class="dash-big-num">₹8,200</div>
+          <div class="dash-big-label">Total Managed This Month</div>
+          <div class="dash-bar-group">
+            <div class="dash-bar-label"><span>Food &amp; Dining</span><span>₹1,840</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-green" style="width:45%"></div></div>
+            <div class="dash-bar-label"><span>Education</span><span>₹2,200</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-blue" style="width:54%"></div></div>
+            <div class="dash-bar-label"><span>Transport</span><span>₹680</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-warm" style="width:17%"></div></div>
+            <div class="dash-bar-label"><span>Investments</span><span>₹1,000</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-purple" style="width:24%"></div></div>
+          </div>
+          <div class="dash-goals">
+            <span class="dash-goal-tag tag-green">✓ Under budget</span>
+            <span class="dash-goal-tag tag-blue">📈 SIP active</span>
+            <span class="dash-goal-tag tag-warm">🎯 Goal: 78%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Highlights -->
+<section id="feature-highlights" class="section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">Core Capabilities</span>
+      <h2 class="display-md">Four tools. One financial foundation.</h2>
+      <p>From tracking every transaction to exploring your first investment — Finvest gives students the complete toolkit to understand, manage, and grow their money.</p>
+    </div>
+    <div class="highlight-cards">
+      <div class="hl-card fade-up">
+        <div class="hl-card-glow" style="background:rgba(0,229,160,0.2)"></div>
+        <div class="hl-icon"><div class="icon-circle icon-circle-green">💸</div></div>
+        <h3>Expense Tracking</h3>
+        <p>View and analyse everyday spending to understand your financial behaviour. Every transaction builds a clearer picture of where your money goes — so you can make smarter choices day by day.</p>
+      </div>
+      <div class="hl-card fade-up fade-up-delay-1">
+        <div class="hl-card-glow" style="background:rgba(0,102,255,0.2)"></div>
+        <div class="hl-icon"><div class="icon-circle icon-circle-blue">🪣</div></div>
+        <h3>Savings Buckets</h3>
+        <p>Create dedicated buckets for different financial goals and track your progress toward each one. Whether it's a gadget, a trip, or an emergency fund — your savings are always organised and visible.</p>
+      </div>
+      <div class="hl-card fade-up fade-up-delay-2">
+        <div class="hl-card-glow" style="background:rgba(255,184,0,0.2)"></div>
+        <div class="hl-icon"><div class="icon-circle icon-circle-warm">🔍</div></div>
+        <h3>Investment Discovery</h3>
+        <p>Explore beginner-friendly investment opportunities based on your personal goals. Understand how money can grow over time — with clear, jargon-free explanations designed for first-time investors.</p>
+      </div>
+      <div class="hl-card fade-up fade-up-delay-3">
+        <div class="hl-card-glow" style="background:rgba(157,78,221,0.2)"></div>
+        <div class="hl-icon"><div class="icon-circle icon-circle-purple">📖</div></div>
+        <h3>Financial Learning</h3>
+        <p>Access simple learning resources that explain budgeting, saving, and investing in plain language. Build the financial awareness that helps you approach money with confidence and long-term thinking.</p>
+      </div>
+      <div class="hl-card fade-up fade-up-delay-1">
+        <div class="hl-card-glow" style="background:rgba(0,229,160,0.2)"></div>
+        <div class="hl-icon"><div class="icon-circle icon-circle-green">🎯</div></div>
+        <h3>Goal-Based Saving</h3>
+        <p>Finvest is designed to encourage goal-based saving from an early stage. Set a target, build toward it steadily, and develop financial discipline that lasts well beyond your student years.</p>
+      </div>
+      <div class="hl-card fade-up fade-up-delay-2">
+        <div class="hl-card-glow" style="background:rgba(0,102,255,0.2)"></div>
+        <div class="hl-icon"><div class="icon-circle icon-circle-blue">⚡</div></div>
+        <h3>Simple Financial Insights</h3>
+        <p>No complex jargon. No overwhelming dashboards. Just clear, actionable insights that make sense for students — helping you understand your finances and take the right steps forward.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Platform Overview -->
+<section id="platform-overview" class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="eyebrow">How It Works</span>
+      <h2 class="display-md">Track. Save. Grow. Repeat.</h2>
+      <p>Three simple steps. One smarter financial life. Here's how Finvest turns everyday transactions into a clear path toward your goals.</p>
+    </div>
+    <div class="overview-grid">
+      <div class="overview-steps fade-up">
+        <div class="step-item">
+          <div class="step-num-circle">01</div>
+          <div class="step-content">
+            <h4>Track</h4>
+            <p>Every transaction helps create a clearer picture of your spending habits. View and analyse where your money goes day by day — so nothing slips through unnoticed.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num-circle">02</div>
+          <div class="step-content">
+            <h4>Save</h4>
+            <p>Create goal-based savings buckets for the things that matter to you. Build funds gradually, stay on track, and watch your targets get closer with every contribution.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num-circle">03</div>
+          <div class="step-content">
+            <h4>Grow</h4>
+            <p>Explore beginner-friendly investment options and learn how your money can grow over time. Start small, build knowledge, and develop confidence in your financial decisions.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num-circle">04</div>
+          <div class="step-content">
+            <h4>Learn</h4>
+            <p>Access simple learning resources that explain budgeting, saving, and investing in plain language — giving you the financial awareness to make smarter choices every day.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num-circle">05</div>
+          <div class="step-content">
+            <h4>Repeat</h4>
+            <p>Good financial habits compound just like money does. The more consistently you track, save, and learn, the stronger and more disciplined your financial foundation becomes.</p>
+          </div>
+        </div>
+      </div>
+      <div class="fade-up fade-up-delay-2">
+        <div class="overview-card">
+          <div class="overview-card-header">
+            <div class="icon-circle icon-circle-green">📈</div>
+            <div>
+              <div class="overview-card h4" style="font-size:0.95rem;font-weight:600">Your Savings Growth</div>
+              <div style="font-size:0.75rem;color:var(--text-dim)">Last 6 months</div>
+            </div>
+          </div>
+          <div class="mini-chart">
+            <div class="mini-bar fill-green" style="height:30%"></div>
+            <div class="mini-bar fill-green" style="height:45%"></div>
+            <div class="mini-bar fill-green" style="height:40%"></div>
+            <div class="mini-bar fill-green" style="height:60%"></div>
+            <div class="mini-bar fill-green" style="height:75%"></div>
+            <div class="mini-bar fill-green" style="height:90%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:0.72rem;color:var(--text-dim)">
+            <span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-card-header">
+            <div class="icon-circle icon-circle-blue">🎯</div>
+            <div>
+              <div style="font-size:0.95rem;font-weight:600">Active Goals</div>
+              <div style="font-size:0.75rem;color:var(--text-dim)">3 goals in progress</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:5px"><span>MacBook Pro</span><span style="color:var(--accent)">78%</span></div>
+              <div class="dash-bar-track"><div class="dash-bar-fill fill-green" style="width:78%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:5px"><span>Goa Trip</span><span style="color:#4D9FFF">52%</span></div>
+              <div class="dash-bar-track"><div class="dash-bar-fill fill-blue" style="width:52%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:5px"><span>Emergency Fund</span><span style="color:var(--accent-warm)">31%</span></div>
+              <div class="dash-bar-track"><div class="dash-bar-fill fill-warm" style="width:31%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────
+     PAGE 2: PROBLEM & SOLUTION
+───────────────────────────────────────── -->
+<section id="problem" class="section">
+  <div class="container">
+    <div class="problem-intro fade-up">
+      <span class="eyebrow" style="display:block;margin-bottom:16px">The Challenge</span>
+      <h2 class="display-md" style="margin-bottom:16px">Students are flying blind with money</h2>
+      <p>Students today use digital payments every day — Google Pay, PhonePe, UPI — but most rarely stop to track where the money actually goes. Without visibility into spending patterns, saving becomes guesswork and building financial discipline feels impossible before it even begins.</p>
+    </div>
+
+    <div class="problem-blocks">
+      <div class="problem-card fade-up">
+        <div class="card-num">01</div>
+        <h3>No Financial Education</h3>
+        <p>Financial literacy is almost never taught in school. Students graduate knowing algebra and history, but not how to budget a monthly allowance, understand interest, or open a savings account. This gap leaves them unprepared for the real financial decisions that begin on day one of college.</p>
+      </div>
+      <div class="problem-card fade-up fade-up-delay-1">
+        <div class="card-num">02</div>
+        <h3>Untracked Spending</h3>
+        <p>UPI and mobile wallets make spending frictionless — a tap here, a scan there — and most students have no idea how much they've spent until the money is already gone. Without tracking, small daily purchases silently add up into habits that are hard to break later.</p>
+      </div>
+      <div class="problem-card fade-up fade-up-delay-2">
+        <div class="card-num">03</div>
+        <h3>Zero Savings Culture</h3>
+        <p>Most students live with a "spend now, save later" mindset — assuming savings can wait until they start earning a salary. But the early years are exactly when compound growth has the most impact. Delaying savings by even five years can mean a significant difference in long-term financial outcomes.</p>
+      </div>
+      <div class="problem-card fade-up fade-up-delay-3">
+        <div class="card-num">04</div>
+        <h3>Investing Feels Intimidating</h3>
+        <p>Existing financial platforms are built for working adults — filled with terminology, complexity, and products that assume prior knowledge. For a student curious about investing, the learning curve feels steep enough to give up before they start. The tools simply weren't designed with them in mind.</p>
+      </div>
+    </div>
+
+    <!-- Solution Divider -->
+    <div class="solution-divider fade-up">
+      <div class="solution-divider-line"></div>
+      <div class="solution-divider-badge">✦ Here's our solution</div>
+      <div class="solution-divider-line"></div>
+    </div>
+
+    <div class="solution-blocks">
+      <div class="solution-card fade-up">
+        <div class="sol-icon">💡</div>
+        <h3>Guided Financial Learning</h3>
+        <p>Finvest makes financial learning part of the everyday experience. Simple, bite-sized resources explain budgeting, saving, and investing in plain language — so students build genuine financial awareness rather than just using tools they don't fully understand.</p>
+      </div>
+      <div class="solution-card fade-up fade-up-delay-1">
+        <div class="sol-icon">📱</div>
+        <h3>Automated Expense Tracking</h3>
+        <p>Every transaction paints a picture. Finvest helps students view and analyse their spending in real time — categorised, visualised, and easy to understand. Awareness of where money goes is the first and most powerful step toward changing financial behaviour for the better.</p>
+      </div>
+      <div class="solution-card fade-up fade-up-delay-2">
+        <div class="sol-icon">🏆</div>
+        <h3>Goal-Driven Motivation</h3>
+        <p>Abstract advice like "save more" rarely works. Finvest replaces it with tangible, visible goals — a savings bucket with a target, a deadline, and a progress bar. When students can see their goal getting closer every week, saving becomes something they want to do, not something they feel they should.</p>
+      </div>
+    </div>
+
+    <!-- Why Finvest + Who It's For -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:60px">
+      <div class="card card-accent-top fade-up" style="padding:40px">
+        <span class="eyebrow" style="display:block;margin-bottom:16px">Why Finvest</span>
+        <h3 class="display-sm" style="margin-bottom:20px">Built differently. For students.</h3>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span style="color:var(--accent);font-size:1rem;margin-top:2px">✦</span>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;margin-bottom:3px">Designed specifically for students</div>
+              <div style="font-size:0.83rem;color:var(--text-muted)">Not for professionals. Not for traders. Built from the ground up for the way students actually manage money.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span style="color:var(--accent);font-size:1rem;margin-top:2px">✦</span>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;margin-bottom:3px">Simple insights, no complex jargon</div>
+              <div style="font-size:0.83rem;color:var(--text-muted)">Every feature is explained clearly. You'll understand your finances without needing a finance degree.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span style="color:var(--accent);font-size:1rem;margin-top:2px">✦</span>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;margin-bottom:3px">Encourages goal-based saving</div>
+              <div style="font-size:0.83rem;color:var(--text-muted)">Structure your savings around what matters to you — not generic advice that doesn't fit your life.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span style="color:var(--accent);font-size:1rem;margin-top:2px">✦</span>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;margin-bottom:3px">Introduces investing accessibly</div>
+              <div style="font-size:0.83rem;color:var(--text-muted)">Explore investment options at your own pace — no pressure, no complexity, just growing confidence.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card fade-up fade-up-delay-1" style="padding:40px;background:linear-gradient(135deg,rgba(0,102,255,0.06),var(--bg-card));border-color:rgba(0,102,255,0.15)">
+        <span class="eyebrow" style="display:block;margin-bottom:16px;color:#4D9FFF">Who It's For</span>
+        <h3 class="display-sm" style="margin-bottom:20px">Made for you, if you're a...</h3>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(0,102,255,0.06);border:1px solid rgba(0,102,255,0.12);border-radius:12px">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,102,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🎓</div>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600">College Student</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Managing allowances, stipends, or part-time income for the first time</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.12);border-radius:12px">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,229,160,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">💡</div>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600">Young Adult Managing Money Independently</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Taking financial responsibility and looking for the right tools to start smart</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(255,184,0,0.05);border:1px solid rgba(255,184,0,0.12);border-radius:12px">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,184,0,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">📊</div>
+            <div>
+              <div style="font-size:0.9rem;font-weight:600">Anyone Wanting Better Financial Habits</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">Interested in budgeting, saving, and investing but not sure where to begin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────
+     PAGE 3: FEATURES
+───────────────────────────────────────── -->
+<section id="features" class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="features-hero fade-up">
+      <span class="eyebrow">Platform Features</span>
+      <h2 class="display-md">Built for every student, every goal</h2>
+      <p>From daily expense tracking to long-term investment planning — every tool you need to build good financial habits is right here, in one clean and intuitive interface.</p>
+    </div>
+
+    <!-- Feature Tabs -->
+    <div class="feature-tabs fade-up">
+      <button class="feature-tab active">All Features</button>
+      <button class="feature-tab">Savings</button>
+      <button class="feature-tab">Tracking</button>
+      <button class="feature-tab">Investing</button>
+      <button class="feature-tab">Analytics</button>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="feature-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-card-icon" style="background:rgba(0,229,160,0.1)">🎯</div>
+        <h3>Goal-Based Savings Planner</h3>
+        <p>Enter your target amount and deadline. The platform calculates how much you need to save each month and suggests practical strategies — making saving structured, realistic, and easy to follow.</p>
+        <span class="feature-tag tag-green">Savings</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <div class="feature-card-icon" style="background:rgba(0,102,255,0.1)">💳</div>
+        <h3>Expense Categorisation</h3>
+        <p>Every transaction is automatically tagged into categories like food, transport, education, and entertainment. Simple charts surface patterns so you can cut unnecessary spending and build better habits over time.</p>
+        <span class="feature-tag tag-blue">Tracking</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <div class="feature-card-icon" style="background:rgba(255,184,0,0.1)">📈</div>
+        <h3>SIP & Investment Planner</h3>
+        <p>The platform recommends SIPs, mutual funds, and introductory stock options based on your goals and timeline. No complex jargon — just clear, actionable guidance that helps you start investing with confidence.</p>
+        <span class="feature-tag tag-warm">Investing</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-3">
+        <div class="feature-card-icon" style="background:rgba(157,78,221,0.1)">📊</div>
+        <h3>Financial Planning Dashboard</h3>
+        <p>The Financial Planning Dashboard brings together your savings goals, expenses, and investments into one clear view — so you can see your progress, spot trends, and stay motivated to stick to your plan.</p>
+        <span class="feature-tag" style="background:rgba(157,78,221,0.1);color:#C084FC;border:1px solid rgba(157,78,221,0.2)">Analytics</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <div class="feature-card-icon" style="background:rgba(0,229,160,0.1)">💳</div>
+        <h3>Smart Expense Tracking</h3>
+        <p>Record daily spending and see it automatically sorted into categories like food, transport, and entertainment. Visual charts reveal habits so you can cut what's draining your budget.</p>
+        <span class="feature-tag tag-green">Tracking</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <div class="feature-card-icon" style="background:rgba(0,102,255,0.1)">🔗</div>
+        <h3>Future-Ready Payment Integration</h3>
+        <p>Designed for future expansion, the platform will support direct payments, bank account linking, peer-to-peer transfers, and in-app investing — creating a single place to manage your entire financial life.</p>
+        <span class="feature-tag tag-blue">Payments</span>
+      </div>
+    </div>
+
+    <!-- Feature Showcase: Goal Savings -->
+    <div class="feature-showcase fade-up" style="margin-top:40px">
+      <div class="showcase-text">
+        <div class="showcase-label">Goal-Based Saving Planner</div>
+        <h3 class="display-sm">Know exactly how much to save, every month</h3>
+        <p>Students often know what they want — a new laptop, a smartphone, a trip with friends — but have no idea how much to save each month to get there. Our Goal-Based Saving Planner solves exactly that. Simply enter the price of what you want and your target timeline, and the platform instantly calculates your monthly saving requirement and suggests the best strategy to achieve it. Saving becomes structured, realistic, and motivating.</p>
+        <ul class="feature-bullets">
+          <li>Set goals for any purchase — gadgets, trips, education, or emergencies</li>
+          <li>Automatic monthly saving amount calculated from your target and timeline</li>
+          <li>Visual progress tracker with milestone celebrations</li>
+          <li>Smart strategy suggestions to help you reach your goal faster</li>
+        </ul>
+      </div>
+      <div class="goal-tracker-visual">
+        <div style="font-size:0.8rem;font-weight:600;margin-bottom:16px;color:var(--text-muted)">My Goals</div>
+        <div class="goal-item">
+          <div class="goal-row">
+            <div class="goal-name">🖥 MacBook Pro</div>
+            <div class="goal-pct" style="color:var(--accent)">78%</div>
+          </div>
+          <div class="goal-progress"><div class="goal-fill fill-green" style="width:78%"></div></div>
+          <div class="goal-sub">₹18,200 / ₹23,500 · Target: Mar 2025</div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row">
+            <div class="goal-name">✈️ Europe Trip</div>
+            <div class="goal-pct" style="color:#4D9FFF">52%</div>
+          </div>
+          <div class="goal-progress"><div class="goal-fill fill-blue" style="width:52%"></div></div>
+          <div class="goal-sub">₹26,000 / ₹50,000 · Target: Jun 2025</div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row">
+            <div class="goal-name">🛡 Emergency Fund</div>
+            <div class="goal-pct" style="color:var(--accent-warm)">31%</div>
+          </div>
+          <div class="goal-progress"><div class="goal-fill fill-warm" style="width:31%"></div></div>
+          <div class="goal-sub">₹6,200 / ₹20,000 · Ongoing</div>
+        </div>
+        <div style="margin-top:20px;padding:14px;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.15);border-radius:10px">
+          <div style="font-size:0.72rem;color:var(--accent);margin-bottom:4px">💡 AI Insight</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">Save ₹1,433/month and you'll reach your MacBook goal 2 weeks ahead of schedule.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Showcase: Investing -->
+    <div class="feature-showcase fade-up" style="grid-template-columns:1fr 1.2fr">
+      <div class="invest-visual">
+        <div class="invest-header">
+          <div>
+            <div style="font-size:0.7rem;color:var(--text-dim);margin-bottom:4px">Portfolio Value</div>
+            <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:700">₹12,840</div>
+          </div>
+          <div class="invest-returns">
+            <div class="big">+14.2%</div>
+            <div class="lbl">Total Returns</div>
+          </div>
+        </div>
+        <div class="invest-chart-mock">
+          <div class="ic-bar" style="height:40%"></div>
+          <div class="ic-bar" style="height:55%"></div>
+          <div class="ic-bar" style="height:45%"></div>
+          <div class="ic-bar" style="height:65%"></div>
+          <div class="ic-bar" style="height:60%"></div>
+          <div class="ic-bar" style="height:75%"></div>
+          <div class="ic-bar" style="height:80%"></div>
+          <div class="ic-bar" style="height:90%"></div>
+          <div class="ic-bar" style="height:95%"></div>
+          <div class="ic-bar" style="height:100%"></div>
+        </div>
+        <div class="invest-chips">
+          <div class="invest-chip">Nifty 50 Index</div>
+          <div class="invest-chip">Small Cap Fund</div>
+          <div class="invest-chip">Gold ETF</div>
+          <div class="invest-chip">FD</div>
+        </div>
+      </div>
+      <div class="showcase-text">
+        <div class="showcase-label showcase-label-warm">Investment Guidance for Beginners</div>
+        <h3 class="display-sm">Start investing with just ₹100 — no experience needed</h3>
+        <p>Investing can feel intimidating when you're new to financial markets. Finvest removes that barrier by presenting beginner-friendly suggestions based on your savings goals and timeline. Whether it's a Systematic Investment Plan, a mutual fund, or a basic stock — every option is explained in plain, simple language so you can build confidence gradually and let your money grow while you study.</p>
+        <ul class="feature-bullets">
+          <li>SIP, mutual fund, and stock suggestions tailored to your goals</li>
+          <li>Start investing with as little as ₹100 per month</li>
+          <li>Projected returns calculator aligned to your savings timeline</li>
+          <li>Plain-language explanations — no jargon, no confusion</li>
+        </ul>
+        <div style="margin-top:24px">
+          <a href="#contact" class="btn btn-primary">Start Investing →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Showcase: Expense Tracking -->
+    <div class="feature-showcase fade-up" style="margin-top:24px">
+      <div class="showcase-text">
+        <div class="showcase-label" style="color:#4D9FFF">Smart Expense Tracking</div>
+        <h3 class="display-sm">See every rupee — know every habit</h3>
+        <p>Managing money starts with understanding where it goes. The Expense Tracking feature lets students record daily spending and automatically sorts it into clear categories — food, transport, subscriptions, shopping, and entertainment. Simple visual charts reveal spending patterns, helping users identify what's draining their budget. Over time, this builds financial awareness and discipline that lasts a lifetime.</p>
+        <ul class="feature-bullets">
+          <li>Categorise spending into food, transport, education, and more</li>
+          <li>Visual charts and summaries for instant spending insights</li>
+          <li>Identify and eliminate unnecessary expenses easily</li>
+          <li>Build long-term financial discipline through daily awareness</li>
+        </ul>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:24px">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text-muted);margin-bottom:16px">This Month's Spending</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span>🍜 Food &amp; Dining</span><span style="color:#FF7A7A">₹1,840 · 45%</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-green" style="width:45%;background:linear-gradient(90deg,#FF7A7A,#FF5B5B)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span>📚 Education</span><span style="color:#4D9FFF">₹2,200 · 54%</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-blue" style="width:54%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span>🚌 Transport</span><span style="color:var(--accent-warm)">₹680 · 17%</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-warm" style="width:17%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span>🛍 Shopping</span><span style="color:#C084FC">₹920 · 22%</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-purple" style="width:22%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span>🎬 Entertainment</span><span style="color:var(--accent)">₹440 · 11%</span></div>
+            <div class="dash-bar-track"><div class="dash-bar-fill fill-green" style="width:11%"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:rgba(0,102,255,0.06);border:1px solid rgba(0,102,255,0.15);border-radius:10px">
+          <div style="font-size:0.72rem;color:#4D9FFF;margin-bottom:4px">💡 Insight</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">You spent 22% more on food this month vs last. Cutting ₹400 here gets you to your MacBook goal faster.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Showcase: Financial Planning Dashboard -->
+    <div class="feature-showcase fade-up" style="margin-top:24px;grid-template-columns:1fr 1.2fr">
+      <div style="background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-warm))"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div style="font-size:0.88rem;font-weight:600">Financial Overview</div>
+          <span class="dash-period">Nov 2024</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div style="background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.15);border-radius:10px;padding:14px">
+            <div style="font-size:0.68rem;color:var(--text-dim);margin-bottom:4px">Total Saved</div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--accent)">₹8,200</div>
+          </div>
+          <div style="background:rgba(0,102,255,0.07);border:1px solid rgba(0,102,255,0.15);border-radius:10px;padding:14px">
+            <div style="font-size:0.68rem;color:var(--text-dim);margin-bottom:4px">Invested</div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:#4D9FFF">₹3,000</div>
+          </div>
+          <div style="background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.15);border-radius:10px;padding:14px">
+            <div style="font-size:0.68rem;color:var(--text-dim);margin-bottom:4px">Goals Active</div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--accent-warm)">3</div>
+          </div>
+          <div style="background:rgba(157,78,221,0.07);border:1px solid rgba(157,78,221,0.15);border-radius:10px;padding:14px">
+            <div style="font-size:0.68rem;color:var(--text-dim);margin-bottom:4px">Net Worth ↑</div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:#C084FC">+14.2%</div>
+          </div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:8px">Financial Health Score</div>
+        <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-bottom:6px">
+          <div style="width:76%;height:100%;background:linear-gradient(90deg,var(--accent),#00B87A);border-radius:4px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem"><span style="color:var(--accent)">76 / 100 · Good</span><span style="color:var(--text-dim)">↑ +8 pts this month</span></div>
+      </div>
+      <div class="showcase-text">
+        <div class="showcase-label" style="color:#C084FC">Financial Planning Dashboard</div>
+        <h3 class="display-sm">Your entire financial life, in one view</h3>
+        <p>The Financial Planning Dashboard is the central hub of your Finvest experience. It brings together your savings goals, daily expenses, and investment performance into one clean interface. At a glance, you can see how your spending habits affect your savings, track your progress toward every goal, and monitor your financial growth over time. It's designed to keep you motivated, consistent, and in full control.</p>
+        <ul class="feature-bullets">
+          <li>Unified view of savings, expenses, and investments</li>
+          <li>Real-time progress tracking for every goal you've set</li>
+          <li>See how spending decisions directly impact your savings</li>
+          <li>Financial health score to measure overall progress</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Feature Showcase: Future-Ready Payments -->
+    <div class="feature-showcase fade-up" style="margin-top:24px;background:linear-gradient(135deg,rgba(0,102,255,0.05),rgba(0,229,160,0.03));border:1px solid rgba(0,102,255,0.15)">
+      <div class="showcase-text">
+        <div class="showcase-label" style="color:#4D9FFF">Future-Ready Payment Integration</div>
+        <h3 class="display-sm">One platform. Every financial action.</h3>
+        <p>Finvest is built with tomorrow in mind. As the platform evolves, students will be able to do far more than just track — they'll be able to make direct payments, link bank accounts, send peer-to-peer transfers, and invest all within the same app. By weaving payments directly into financial planning tools, the goal is to create one seamless place where students manage their entire financial life, without ever needing to switch apps.</p>
+        <ul class="feature-bullets">
+          <li>Future bank account and UPI linking for automatic tracking</li>
+          <li>Peer-to-peer payments between students and friends</li>
+          <li>Direct in-app investing without third-party redirects</li>
+          <li>A single financial ecosystem — built to grow with you</li>
+        </ul>
+        <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
+          <span class="badge badge-blue">🔜 Coming Soon</span>
+          <a href="#contact" class="btn btn-ghost btn-sm">Join Waitlist →</a>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:var(--bg-card);border:1px solid var(--border-bright);border-radius:14px;padding:20px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div class="icon-circle icon-circle-blue" style="width:36px;height:36px;font-size:1rem">🏦</div>
+            <div style="font-size:0.88rem;font-weight:600">Linked Bank Account</div>
+            <span style="margin-left:auto;font-size:0.68rem;color:var(--accent);background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.2);padding:3px 8px;border-radius:6px">Active</span>
+          </div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">SBI Savings · ••••4821</div>
+          <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;margin-top:6px">₹24,380</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border-bright);border-radius:14px;padding:20px">
+          <div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px">Quick Actions</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="padding:10px;background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.15);border-radius:8px;text-align:center;font-size:0.78rem;color:var(--accent)">💸 Send</div>
+            <div style="padding:10px;background:rgba(0,102,255,0.07);border:1px solid rgba(0,102,255,0.15);border-radius:8px;text-align:center;font-size:0.78rem;color:#4D9FFF">📥 Receive</div>
+            <div style="padding:10px;background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.15);border-radius:8px;text-align:center;font-size:0.78rem;color:var(--accent-warm)">📈 Invest</div>
+            <div style="padding:10px;background:rgba(157,78,221,0.07);border:1px solid rgba(157,78,221,0.15);border-radius:8px;text-align:center;font-size:0.78rem;color:#C084FC">🎯 Save</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────
+     PAGE 4: WHY NOW
+───────────────────────────────────────── -->
+<section id="why-now" class="section">
+  <div class="container">
+    <div class="why-hero fade-up">
+      <span class="eyebrow" style="display:block;margin-bottom:16px">Market Opportunity</span>
+      <h2 class="display-md" style="margin-bottom:16px">The perfect time to launch</h2>
+      <p>India's student population is the largest in the world, UPI has made digital spending universal, and Gen Z is more financially curious than any generation before — yet almost no tools exist that are built specifically for them.</p>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card fade-up">
+        <span class="num">340M+</span>
+        <span class="lbl">Students in India</span>
+      </div>
+      <div class="stat-card fade-up fade-up-delay-1">
+        <span class="num">₹8T</span>
+        <span class="lbl">Youth Spending Market</span>
+      </div>
+      <div class="stat-card fade-up fade-up-delay-2">
+        <span class="num">92%</span>
+        <span class="lbl">Students have smartphones</span>
+      </div>
+      <div class="stat-card fade-up fade-up-delay-3">
+        <span class="num">3%</span>
+        <span class="lbl">Use any budgeting app</span>
+      </div>
+    </div>
+
+    <!-- Why Grid -->
+    <div class="why-grid">
+      <div class="why-block fade-up">
+        <span class="eyebrow">Market Trends</span>
+        <h3>The rise of student fintech in India</h3>
+        <p>UPI has fundamentally changed how students spend money — over 10 billion transactions happen monthly in India, many made by young adults under 25. Digital payments are no longer new; they are the default. Gen Z is more financially aware than any prior generation, actively seeking out information about investing and financial independence. At the same time, regulators like SEBI are pushing for broader investor education and financial inclusion among youth.</p>
+        <p style="margin-top:12px;font-size:0.88rem">The shift is happening — but the tools haven't caught up. Most fintech products are still built for salaried professionals. Finvest is designed to fill that gap, meeting students where they are and giving them the structure they need to build real financial habits.</p>
+      </div>
+      <div class="why-block why-highlight fade-up fade-up-delay-1">
+        <span class="eyebrow">Why Financial Literacy Matters</span>
+        <h3>The habit of saving begins at 18</h3>
+        <p>The financial habits formed between ages 18 and 25 have an outsized impact on long-term financial health. A student who starts a small SIP at 18 and stays consistent will accumulate significantly more wealth by 40 than someone who begins at 25 — even with identical income. Early habits compound just as powerfully as money does.</p>
+        <p style="margin-top:12px;font-size:0.88rem">Encouraging financial awareness, budgeting discipline, and goal-based saving during student life doesn't just help students today — it prepares them for every financial decision they will ever make.</p>
+      </div>
+      <div class="why-block why-block-wide fade-up">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;margin-bottom:24px">
+          <div>
+            <span class="eyebrow" style="display:block;margin-bottom:12px">Timeline</span>
+            <h3>Why the window is now</h3>
+          </div>
+          <span class="badge badge-warm">📊 Market Insight</span>
+        </div>
+        <p style="max-width:600px">Internet penetration in Tier 2 and Tier 3 cities is accelerating rapidly, post-COVID digital adoption among students is irreversible, and the government's push for financial inclusion has created the ideal conditions for a student-first financial platform to thrive.</p>
+        <div class="why-timeline">
+          <div class="timeline-item">
+            <div class="timeline-year">2020</div>
+            <div class="timeline-text">UPI crosses 2B monthly transactions — digital payments become the default for students</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2022</div>
+            <div class="timeline-text">SEBI launches investor awareness campaigns; 50M+ new Demat accounts opened by under-30s</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2024</div>
+            <div class="timeline-text">India's student fintech gap identified — 340M+ students, less than 3% using any budgeting tool</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-year">2025</div>
+            <div class="timeline-text">Finvest launches — the first financial platform built exclusively for students and young adults</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────
+     PAGE 5: REVIEWS
+───────────────────────────────────────── -->
+<section id="reviews" class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="reviews-header fade-up">
+      <span class="eyebrow" style="display:block;margin-bottom:16px">Student Reviews</span>
+      <h2 class="display-md" style="margin-bottom:16px">Real students. Real results.</h2>
+      <p>Let's delve right into the minds of our avid learners and have a sneak peek into their thoughts on our learning process and outcomes.</p>
+    </div>
+
+    <!-- Main Reviews -->
+    <div class="reviews-grid">
+      <div class="review-card featured fade-up">
+        <div class="review-quote">"</div>
+        <p class="review-text">I had no prior financial knowledge before joining Finvest. I didn't know how to budget, track my spending, or even think about investing. After joining, I am now well aware of handling my finances correctly and of the investment opportunities that lie ahead of me. It's genuinely changed how I think about money.</p>
+        <div class="review-rating">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="review-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,var(--accent),#00B87A);color:#000">PS</div>
+          <div>
+            <div class="author-name">Kallu Kalia</div>
+            <div class="author-role">First-Year Student, No Prior Finance Background</div>
+          </div>
+          <span class="author-badge badge">Verified</span>
+        </div>
+      </div>
+      <div class="review-card fade-up fade-up-delay-1">
+        <div class="review-quote">"</div>
+        <p class="review-text">I come from a financial background and joined the advanced course for deeper learning in the field. I was easily able to apply my existing concepts throughout the course — the structure was clear and the explanations were solid. In my honest opinion though, the practicality was lacking in some areas. I'd love to see more real-world application in future updates.</p>
+        <div class="review-rating">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="review-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#0066FF,#4D9FFF);color:#fff">AK</div>
+          <div>
+            <div class="author-name">Taylor Swift</div>
+            <div class="author-role">Advanced Course Student, Finance Background</div>
+          </div>
+          <span class="author-badge badge-blue">Verified</span>
+        </div>
+      </div>
+      <div class="review-card fade-up fade-up-delay-2">
+        <div class="review-quote">"</div>
+        <p class="review-text">Most financial resources out there are designed for working professionals, not students. Finvest fills that gap. The tools for budgeting, goal-based saving, and investment discovery are all built in a way that actually makes sense for where I am in life right now. It's the first platform that felt like it was made for me.</p>
+        <div class="review-rating">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="review-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#FFB800,#FF8A00);color:#000">MR</div>
+          <div>
+            <div class="author-name">Meera Reddy</div>
+            <div class="author-role">Undergraduate Student, Hyderabad</div>
+          </div>
+          <span class="author-badge badge-warm">Verified</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Reviews -->
+    <div class="reviews-secondary">
+      <div class="review-mini fade-up">
+        <p class="review-mini-text">The explanations are so easy to follow. Even the investment concepts I thought were complicated made complete sense. No jargon, no confusion — just clear, simple guidance that actually sticks with you.</p>
+        <div class="review-mini-author">
+          <div class="mini-avatar" style="background:rgba(0,229,160,0.15);color:var(--accent)">RJ</div>
+          <div>
+            <div class="mini-name">Riya Joshi</div>
+            <div class="mini-role">B.Com Student, Pune</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-mini fade-up fade-up-delay-1">
+        <p class="review-mini-text">The practical examples from real life made everything click. Budgeting didn't feel like a textbook exercise anymore — it felt relevant and doable. The beginner investment guidance gave me the confidence to finally start my first SIP.</p>
+        <div class="review-mini-author">
+          <div class="mini-avatar" style="background:rgba(0,102,255,0.15);color:#4D9FFF">SK</div>
+          <div>
+            <div class="mini-name">Suraj Kapoor</div>
+            <div class="mini-role">Commerce, Mumbai</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-mini fade-up fade-up-delay-2">
+        <p class="review-mini-text">The budgeting and financial planning tools are genuinely useful. I set a savings goal for a new phone, and Finvest calculated exactly how much I needed to set aside each month. Hit my target in 4 months flat.</p>
+        <div class="review-mini-author">
+          <div class="mini-avatar" style="background:rgba(157,78,221,0.15);color:#C084FC">DN</div>
+          <div>
+            <div class="mini-name">Dhruv Nair</div>
+            <div class="mini-role">Arts, Hyderabad</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Benefits Strip -->
+    <div class="fade-up" style="margin-top:56px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:40px 48px;">
+      <div style="text-align:center;margin-bottom:32px">
+        <span class="eyebrow" style="display:block;margin-bottom:10px">What Students Highlight Most</span>
+        <h3 class="display-sm">Key benefits, straight from our community</h3>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+        <div style="text-align:center;padding:24px 16px;background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.12);border-radius:14px">
+          <div style="font-size:1.8rem;margin-bottom:12px">💬</div>
+          <div style="font-size:0.9rem;font-weight:600;margin-bottom:6px">Easy-to-Understand Explanations</div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">Financial concepts made simple for every student, regardless of prior knowledge</div>
+        </div>
+        <div style="text-align:center;padding:24px 16px;background:rgba(0,102,255,0.05);border:1px solid rgba(0,102,255,0.12);border-radius:14px">
+          <div style="font-size:1.8rem;margin-bottom:12px">🌍</div>
+          <div style="font-size:0.9rem;font-weight:600;margin-bottom:6px">Practical Real-Life Examples</div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">Lessons grounded in everyday situations students actually face</div>
+        </div>
+        <div style="text-align:center;padding:24px 16px;background:rgba(255,184,0,0.05);border:1px solid rgba(255,184,0,0.12);border-radius:14px">
+          <div style="font-size:1.8rem;margin-bottom:12px">📈</div>
+          <div style="font-size:0.9rem;font-weight:600;margin-bottom:6px">Beginner-Friendly Investment Guidance</div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">Start investing confidently with zero prior experience needed</div>
+        </div>
+        <div style="text-align:center;padding:24px 16px;background:rgba(157,78,221,0.05);border:1px solid rgba(157,78,221,0.12);border-radius:14px">
+          <div style="font-size:1.8rem;margin-bottom:12px">🎯</div>
+          <div style="font-size:0.9rem;font-weight:600;margin-bottom:6px">Budgeting & Financial Planning Tools</div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">Actionable tools that help students plan, track, and achieve real goals</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission Closing Statement -->
+    <div class="fade-up" style="margin-top:40px;background:linear-gradient(135deg,rgba(0,229,160,0.06),rgba(0,102,255,0.04));border:1px solid rgba(0,229,160,0.14);border-radius:20px;padding:48px;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(0,229,160,0.07),transparent);pointer-events:none"></div>
+      <div style="position:relative;z-index:1;max-width:760px;margin:0 auto">
+
+        <!-- Our Insights -->
+        <span class="eyebrow" style="display:block;margin-bottom:16px">Our Insights</span>
+        <h3 class="display-sm" style="margin-bottom:20px">We aim to improve — always.</h3>
+        <p style="font-size:1rem;line-height:1.8;margin-bottom:16px">At Finvest, we constantly strive to be better by working on the feedback and reviews we receive from our students. Our goal has always been clear: to inculcate financial skills in the Gen-Z generation of today.</p>
+        <p style="font-size:0.95rem;line-height:1.8;margin-bottom:32px">Students today operate in a highly digital financial environment where online payments, mobile wallets, and instant transactions make spending convenient. Most students depend on fixed allowances, part-time income, or financial support from family — yet many are still unaware of methods to track and manage their expenses, despite having easy access to digital tools. Finvest is a platform made exclusively for students and young adults, because most financial resources are designed for working professionals rather than students.</p>
+
+        <!-- Our Focus divider -->
+        <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border-bright),transparent);margin-bottom:32px"></div>
+        <span class="eyebrow" style="display:block;margin-bottom:20px;color:#4D9FFF">Our Focus for Students</span>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:36px">
+          <div style="padding:24px;background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.12);border-radius:14px">
+            <div style="font-size:1.6rem;margin-bottom:12px">🏦</div>
+            <div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:8px">Financial Discipline</div>
+            <div style="font-size:0.83rem;color:var(--text-muted);line-height:1.65">We aim to help students develop financial discipline so they can manage limited resources responsibly and avoid unnecessary debt. Learning this early builds a strong foundation for long-term financial stability.</div>
+          </div>
+          <div style="padding:24px;background:rgba(0,102,255,0.05);border:1px solid rgba(0,102,255,0.12);border-radius:14px">
+            <div style="font-size:1.6rem;margin-bottom:12px">📊</div>
+            <div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:8px">Spending Awareness</div>
+            <div style="font-size:0.83rem;color:var(--text-muted);line-height:1.65">Our platform encourages students to understand and track their spending patterns. This awareness helps them make informed choices and build healthier money management habits that last a lifetime.</div>
+          </div>
+          <div style="padding:24px;background:rgba(255,184,0,0.05);border:1px solid rgba(255,184,0,0.12);border-radius:14px">
+            <div style="font-size:1.6rem;margin-bottom:12px">🎯</div>
+            <div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:8px">Goal-Based Thinking</div>
+            <div style="font-size:0.83rem;color:var(--text-muted);line-height:1.65">We promote goal-based saving and investment thinking so students can connect their financial decisions with future aspirations — helping them plan ahead and develop a proactive approach to personal finance.</div>
+          </div>
+        </div>
+
+        <a href="#contact" class="btn btn-primary btn-lg">Join the Movement →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ─────────────────────────────────────────
+     PAGE 6: ABOUT US
+───────────────────────────────────────── -->
+<section id="about" class="section">
+  <div class="container">
+    <div class="about-hero-grid">
+      <div class="about-text fade-up">
+        <span class="eyebrow">Our Story</span>
+        <h2 class="display-md">We were students who got it wrong</h2>
+        <p>Finvest was born out of a simple frustration. Our founders were college students who made every financial mistake in the book — overspending on things they didn't need, saving nothing for months at a time, and watching investment opportunities pass them by because it all felt too complicated. When they looked for tools to help, everything they found was built for working professionals, not students.</p>
+        <p>So they built what they wished had existed. Finvest's mission is to encourage students to develop financial awareness early — and to approach money with greater confidence, discipline, and long-term thinking. We believe that financial literacy shouldn't begin when you get your first salary. It should begin the moment you start spending.</p>
+        <div class="about-values">
+          <div class="value-item">
+            <div class="value-icon icon-circle-green">🏛</div>
+            <div>
+              <h4>Transparency First</h4>
+              <p>No hidden charges, no confusing terms. Every feature, every recommendation, and every piece of guidance on Finvest is presented with complete clarity.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon icon-circle-blue">🎓</div>
+            <div>
+              <h4>Education, Not Just Tools</h4>
+              <p>We don't just give students tools — we help them understand why those tools matter. Financial capability, not just financial access, is what we're building.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon icon-circle-warm">🌍</div>
+            <div>
+              <h4>Built for Bharat</h4>
+              <p>Finvest is designed for every Indian student — from metro colleges to Tier 2 and Tier 3 cities — making smart financial habits accessible regardless of background.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="brand-visual fade-up fade-up-delay-2">
+        <div class="brand-big-card">
+          <div class="brand-logo-large">Fin<span>vest</span></div>
+          <div class="brand-tagline">Spend. Save. Repeat.</div>
+        </div>
+        <div class="brand-small-row">
+          <div class="brand-small-card">
+            <div class="bsc-num" style="color:var(--accent)">2024</div>
+            <div class="bsc-label">Founded</div>
+          </div>
+          <div class="brand-small-card">
+            <div class="bsc-num" style="color:#4D9FFF">50K+</div>
+            <div class="bsc-label">Beta Users</div>
+          </div>
+          <div class="brand-small-card">
+            <div class="bsc-num" style="color:var(--accent-warm)">5</div>
+            <div class="bsc-label">Founders</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vision Block -->
+    <div class="vision-block fade-up">
+      <span class="eyebrow">Our Vision</span>
+      <h3>A financially aware generation — starting today.</h3>
+      <p>Our long-term vision is to become the financial operating system for every student in India. Beyond tracking and saving, Finvest will grow to support credit building, tax awareness, financial coaching, and direct investing — so that by the time students enter the workforce, they already think, plan, and act like financially confident adults.</p>
+    </div>
+
+    <!-- Team Section -->
+    <div class="fade-up">
+      <div class="section-header" style="margin-bottom:40px">
+        <span class="eyebrow" style="display:block;margin-bottom:12px">The Team</span>
+        <h3 class="display-sm">Built by students, for students</h3>
+      </div>
+      <div class="team-grid" style="grid-template-columns:repeat(5,1fr)">
+        <div class="team-card">
+          <div class="team-avatar-wrapper">
+            <div class="team-avatar" style="background:linear-gradient(135deg,rgba(0,229,160,0.2),rgba(0,102,255,0.2))">SA</div>
+          </div>
+          <div class="team-name">Sanchit Agrawal</div>
+          <div class="team-role">Founder</div>
+          <div class="team-socials">
+            <div class="team-social-btn">in</div>
+            <div class="team-social-btn">𝕏</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar-wrapper">
+            <div class="team-avatar" style="background:linear-gradient(135deg,rgba(0,102,255,0.2),rgba(157,78,221,0.2))">RD</div>
+          </div>
+          <div class="team-name">Roshan Dubey</div>
+          <div class="team-role">Co-Founder</div>
+          <div class="team-socials">
+            <div class="team-social-btn">in</div>
+            <div class="team-social-btn">𝕏</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar-wrapper">
+            <div class="team-avatar" style="background:linear-gradient(135deg,rgba(255,184,0,0.2),rgba(255,90,90,0.2))">KL</div>
+          </div>
+          <div class="team-name">Karan Lalwani</div>
+          <div class="team-role">Co-Founder</div>
+          <div class="team-socials">
+            <div class="team-social-btn">in</div>
+            <div class="team-social-btn">𝕏</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar-wrapper">
+            <div class="team-avatar" style="background:linear-gradient(135deg,rgba(157,78,221,0.2),rgba(0,229,160,0.2))">RD</div>
+          </div>
+          <div class="team-name">Rajasi Dabke</div>
+          <div class="team-role">Co-Founder</div>
+          <div class="team-socials">
+            <div class="team-social-btn">in</div>
+            <div class="team-social-btn">𝕏</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar-wrapper">
+            <div class="team-avatar" style="background:linear-gradient(135deg,rgba(255,90,90,0.2),rgba(255,184,0,0.2))">RT</div>
+          </div>
+          <div class="team-name">Riva Thacker</div>
+          <div class="team-role">Co-Founder</div>
+          <div class="team-socials">
+            <div class="team-social-btn">in</div>
+            <div class="team-social-btn">𝕏</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CTA Strip -->
+<div class="cta-section">
+  <div class="glow-orb cta-glow-1"></div>
+  <div class="container" style="position:relative;z-index:1">
+    <span class="eyebrow" style="display:block;margin-bottom:16px">Ready to start?</span>
+    <h2 class="display-md fade-up">Join 50,000+ students building their financial future</h2>
+    <p class="fade-up fade-up-delay-1">Designed specifically for students — start tracking, saving, and growing your money today. No experience required.</p>
+    <div class="cta-actions fade-up fade-up-delay-2">
+      <a href="#contact" class="btn btn-primary btn-lg">Get Started Free →</a>
+      <a href="#features" class="btn btn-ghost btn-lg">See All Features</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────
+     PAGE 7: CONTACT
+───────────────────────────────────────── -->
+<section id="contact" class="section" style="background:var(--bg)">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- Info -->
+      <div class="contact-info fade-up">
+        <span class="eyebrow">Get In Touch</span>
+        <h2 class="display-md">Let's talk</h2>
+        <p>Whether you're a student curious about the platform, a college or school looking to partner with us, an investor who believes in our mission, or just someone who wants to say hello — we'd love to hear from you. We respond to every message within 24 hours.</p>
+
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-item-icon icon-circle-green">📧</div>
+            <div>
+              <div class="contact-item-label">Email us at</div>
+              <div class="contact-item-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e666b6262614e686760786b7d7a206760">[email&#160;protected]</a></div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon icon-circle-blue">📍</div>
+            <div>
+              <div class="contact-item-label">Headquarters</div>
+              <div class="contact-item-text">Bengaluru, Karnataka, India</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon icon-circle-warm">⏱</div>
+            <div>
+              <div class="contact-item-label">Response time</div>
+              <div class="contact-item-text">Within 24 hours</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;font-size:0.82rem;color:var(--text-dim)">Follow us</div>
+        <div class="social-row">
+          <div class="social-btn" title="Twitter">𝕏</div>
+          <div class="social-btn" title="Instagram">◎</div>
+          <div class="social-btn" title="LinkedIn">in</div>
+          <div class="social-btn" title="YouTube">▶</div>
+          <div class="social-btn" title="Discord">⌘</div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="contact-form-card fade-up fade-up-delay-1">
+        <h3 style="font-size:1.3rem;margin-bottom:6px">Send us a message</h3>
+        <p style="font-size:0.85rem;margin-bottom:28px">Whether you're a student, a partner, or an investor — we'd love to connect. Fill in the form and we'll get back to you shortly.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="Your first name">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Your last name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>I am a...</label>
+          <select>
+            <option value="">Select your role</option>
+            <option>Student</option>
+            <option>School / College Administrator</option>
+            <option>Investor / VC</option>
+            <option>Partner / Business</option>
+            <option>Press / Media</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea placeholder="Tell us how we can help you..."></textarea>
+        </div>
+        <label class="form-checkbox">
+          <input type="checkbox">
+          I agree to the Privacy Policy and Terms of Service
+        </label>
+        <button class="btn btn-primary form-submit btn-lg">Send Message →</button>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section fade-up">
+      <h3 class="display-sm" style="text-align:center;margin-bottom:40px">Frequently asked questions</h3>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-q">Is Finvest free for students? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">Yes — Finvest's core features including expense tracking, savings buckets, and financial learning are completely free. Premium features may be introduced in the future.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is my financial data safe on Finvest? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">Absolutely. Finvest uses bank-grade encryption to protect all user data. We never access or store your account credentials, and we don't share your data with third parties.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I link my UPI or bank account? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">UPI and bank account linking is on our roadmap. Currently, students can manually track expenses or import transaction data. Full integration is coming soon.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Do I need a Demat account to use the investment features? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">The Investment Discovery feature is for learning and exploring options only. No Demat account or KYC is required to browse investment opportunities and understand how they work.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is Finvest available on iOS and Android? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">Finvest is currently available as a web platform. Native iOS and Android apps are in development and will be launching soon. Sign up to be notified first.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How can my college or school partner with Finvest? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">We'd love to work with educational institutions. Reach out to us through the contact form above and our partnerships team will get back to you within 48 hours.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">Fin<span>vest</span></div>
+        <p>Helping students understand spending, build savings habits, and explore investing — in a simple and structured way.</p>
+        <div class="footer-socials">
+          <div class="footer-social">𝕏</div>
+          <div class="footer-social">◎</div>
+          <div class="footer-social">in</div>
+          <div class="footer-social">▶</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#home">How It Works</a></li>
+          <li><a href="#why-now">Why Finvest</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+          <li><a href="#">Disclosures</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Finvest Technologies Pvt. Ltd. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ─── JAVASCRIPT ─── -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── Custom Cursor ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+// ── Nav Scroll ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+  updateActiveLink();
+});
+
+// ── Active Nav Link ──
+const sections = document.querySelectorAll('section[id], div[id="product-intro"], div[id="feature-highlights"], div[id="platform-overview"]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+function updateActiveLink() {
+  let current = '';
+  document.querySelectorAll('section[id]').forEach(s => {
+    const top = s.getBoundingClientRect().top;
+    if (top <= 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+}
+
+// ── Hamburger ──
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+hamburger.addEventListener('click', () => {
+  mobileNav.classList.toggle('open');
+  const spans = hamburger.querySelectorAll('span');
+  if (mobileNav.classList.contains('open')) {
+    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+    spans[1].style.opacity = '0';
+    spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+  } else {
+    spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+  }
+});
+mobileNav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    mobileNav.classList.remove('open');
+    hamburger.querySelectorAll('span').forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+  });
+});
+
+// ── Feature Tabs ──
+document.querySelectorAll('.feature-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ── Scroll Reveal ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ── Smooth Nav Link Scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const target = document.querySelector(id);
+    if (target) {
+      e.preventDefault();
+      const offset = target.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+
+// ── Animate progress bars when visible ──
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.dash-bar-fill, .goal-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => { bar.style.width = w; }, 100);
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.dashboard-preview, .goal-tracker-visual, .invest-visual').forEach(el => barObserver.observe(el));
+
+// ── Contact Form Submit ──
+const formSubmit = document.querySelector('.form-submit');
+if (formSubmit) {
+  formSubmit.addEventListener('click', () => {
+    formSubmit.textContent = 'Message Sent ✓';
+    formSubmit.style.background = '#1a3a2a';
+    formSubmit.style.color = 'var(--accent)';
+    formSubmit.disabled = true;
+    setTimeout(() => {
+      formSubmit.textContent = 'Send Message →';
+      formSubmit.style.background = '';
+      formSubmit.style.color = '';
+      formSubmit.disabled = false;    }, 3000);
+  });
+}
+
+// ── Hide cursor on mobile ──
+if ('ontouchstart' in window) {
+  cursor.style.display = 'none';
+  ring.style.display = 'none';
+  document.body.style.cursor = 'auto';
+}
+</script>
+
+</body>
+</html>
